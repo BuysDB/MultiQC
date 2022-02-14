@@ -157,15 +157,17 @@ class MultiqcModule(BaseMultiqcModule):
             log.warning("Could not parse fastp JSON: '{}'".format(f["fn"]))
             return None
 
+        # Parse sample name from json if json is not called
         # Fetch a sample name from the command
         s_name = f["s_name"]
-        cmd = parsed_json["command"].split()
-        for i, v in enumerate(cmd):
-            if v == "-i":
-                s_name = self.clean_s_name(cmd[i + 1], f)
-        if s_name == "fastp":
-            log.warning("Could not parse sample name from fastp command: {}".format(f["fn"]))
-
+        if s_name == 'fastp':
+            cmd = parsed_json["command"].split()
+            for i, v in enumerate(cmd):
+                if v == "-i":
+                    s_name = self.clean_s_name(cmd[i + 1], f)
+            if s_name == "fastp":
+                log.warning("Could not parse sample name from fastp command: {}".format(f["fn"]))
+        
         self.add_data_source(f, s_name)
         self.fastp_data[s_name] = {}
         self.fastp_duplication_plotdata[s_name] = {}
